@@ -3,8 +3,14 @@ import { DataSource } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import dbconfig from './config/db.config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { UserModule } from './components/user/user.module';
+import { DatabaseModule } from './database/database.module';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { I18nModule, AcceptLanguageResolver } from 'nestjs-i18n';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -12,15 +18,23 @@ import dbconfig from './config/db.config';
       isGlobal: true,
       load: [dbconfig],
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        ...configService.get('dbconfig.dev'),
-        autoLoadEntities: true,
-      }),
-      inject: [ConfigService],
+    I18nModule.forRoot({
+      fallbackLanguage: 'vi',
+      loaderOptions: {
+        path: join(__dirname, 'i18n/'),
+        watch: true, // Watch for changes in translation files
+      },
+      resolvers: [AcceptLanguageResolver],
+      logging: false,
     }),
+    DatabaseModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true, // code first approach
+      playground: false, // tắt giao diện graphql playground
+      plugins: [ApolloServerPluginLandingPageLocalDefault()], // Bật Apollo Sandbox
+    }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
