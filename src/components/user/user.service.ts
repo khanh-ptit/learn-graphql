@@ -4,15 +4,12 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { UserRepository } from './repository/user.repository';
 import { CreateUserValidation } from './validation/create-user.validation';
-import { I18nService } from 'nestjs-i18n';
-import { UsersResponse } from './dto/users-response';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly createUserValidation: CreateUserValidation,
-    private readonly i18n: I18nService,
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
@@ -22,13 +19,8 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  async findAll(): Promise<UsersResponse> {
-    const users = await this.userRepository.findAll();
-    return {
-      statusCode: 200,
-      message: this.i18n.t('message.SUCCESS'),
-      data: users,
-    };
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.findAll();
   }
 
   async findOne(id: string): Promise<User> {

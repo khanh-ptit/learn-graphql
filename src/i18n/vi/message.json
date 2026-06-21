@@ -1,3 +1,4 @@
 {
-  "SUCCESS": "Thành công"
+  "SUCCESS": "Thành công",
+  "USER_ALREADY_EXISTS": "Người dùng với email {email} đã tồn tại"
 }

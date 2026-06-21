@@ -1,3 +1,4 @@
 {
-  "SUCCESS": "Success"
+  "SUCCESS": "Success",
+  "USER_ALREADY_EXISTS": "User with email {email} already exists"
 }

@@ -3,24 +3,17 @@ import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
-import { UserResponse } from './dto/user-response';
-import { UsersResponse } from './dto/users-response';
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Mutation(() => UserResponse, { name: 'createUserTest' })
+  @Mutation(() => User, { name: 'createUserTest' })
   async createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    const user = await this.userService.create(createUserInput);
-    return {
-      statusCode: 201,
-      message: 'Create user successfully',
-      data: user,
-    };
+    return await this.userService.create(createUserInput);
   }
 
-  @Query(() => UsersResponse, { name: 'users' })
+  @Query(() => [User], { name: 'users' })
   async findAll() {
     return await this.userService.findAll();
   }
